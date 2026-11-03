@@ -341,6 +341,8 @@ const I18N = {
     tradeRR: 'Reward / risk ratio',
     tradeNote: 'Three profiles for today’s trade based on your risk tolerance. Conservative: waits for a pullback, tight stop to risk little per trade and early exit. Medium: mild pullback, standard stop and exit at the estimated day extreme. Aggressive: market entry, wide stop that absorbs noise and extension exit. Statistical levels; not financial advice.',
     summaryText: 'Combining the fundamental analysis ({fu}% probability of going up) with the technical analysis ({tu}% probability of going up), the model estimates a combined upside probability of {cu}% for today, {date}. Professional recommendation: {reco}.',
+    starAdd: 'Add to watchlist',
+    starRemove: 'Remove from watchlist',
   },
 };
 
@@ -348,6 +350,7 @@ const I18N = {
 const state = {
   theme: localStorage.getItem('btc-theme') || 'dark',
   lang: (() => { const s = localStorage.getItem('btc-lang'); return LOC_BY_LANG[s] ? s : 'es'; })(),
+  watchlist: JSON.parse(localStorage.getItem('mp_watchlist') || '[]'),
   statusKey: 'statusLoading',
 };
 
@@ -911,7 +914,7 @@ function analyzeFundamental(market, fng) {
   addMetricRow(els.fundMetrics, t('m24h'), fmtPct(change24h), change24h >= 0 ? 'up' : 'down');
   addMetricRow(els.fundMetrics, t('m7d'), fmtPct(change7d), change7d >= 0 ? 'up' : 'down');
   addMetricRow(els.fundMetrics, t('mFng'), `${fngValue} · ${translateFng(fngLabel)}`, fngValue >= 50 ? 'up' : 'down');
-  addMetricRow(els.fundMetrics, t('mSentiment'), `${sentimentUp.toFixed(0)}%`, sentimentUp >= 50 ? 'up' : 'down');
+  addMetricRow(els.fundMetrics, t('mSentiment'), `${sentimentUp.toFixed(0)}%`, sentimentUp >= 50 ? 'up' : 'down');\n  addMetricRow(els.fundMetrics, t('mSentimentComposite'), t('mSentimentCompositeDesc'), 'neutral');
   // Sin market-cap (respaldo spot): no se inventa un $0. Se muestra el volumen
   // real y la capitalización como no disponible.
   if (marketCap > 0) {
@@ -1133,7 +1136,7 @@ function renderRangeBlock(upProb, downProb) {
   els.rangeDate.textContent = `· ${today}`;
 
   els.rangeMetrics.innerHTML = '';
-  addMetricRow(els.rangeMetrics, t('rangeVol'), `${(sigma * 100).toFixed(2)}%`, 'neutral');
+  addMetricRow(els.rangeMetrics, t('rangeSigma68'), `±${(sigma * 100).toFixed(2)}% (68%)`, 'neutral');\n  addMetricRow(els.rangeMetrics, t('rangeSigma95'), `±${(sigma * 200).toFixed(2)}% (95%)`, 'neutral');
   addMetricRow(els.rangeMetrics, t('rangeUp'), `+${upPct.toFixed(2)}% → ${fmtUSD(high)}`, 'up');
   addMetricRow(els.rangeMetrics, t('rangeDown'), `−${downPct.toFixed(2)}% → ${fmtUSD(low)}`, 'down');
   addMetricRow(els.rangeMetrics, t('rangePrice'), `${fmtUSD(low)} – ${fmtUSD(high)}`, 'neutral');
@@ -1200,6 +1203,48 @@ function buildSummary(fundamental, technical, trendUp = true) {
 
   els.recoPill.textContent = t(recoPillKey);
   els.recoPill.className = `reco-pill ${recoClass}`;
+  
+  // Track recommendation state changes for notifications
+  const prevReco = localStorage.getItem('mp_prev_reco');
+  const recoKey = recoClass + 'Pill'; // e.g., 'buyPill', 'sellPill', 'holdPill'
+  localStorage.setItem('mp_prev_reco', recoKey);
+  
+  // Show notification if signal changed from NEUTRAL to COMPRA/VENTA
+  if (prevReco && prevReco !== recoKey) {
+    const prevNeutral = prevReco === 'holdPill';
+    const nowBuying = recoKey === 'buyPill';
+    const nowSelling = recoKey === 'sellPill';
+    if ((prevNeutral && nowBuying) || (prevNeutral && nowSelling)) {
+      const title = nowBuying ? t('recoBuyText') : t('recoSellText');
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('🔔 MarketPulse Señal', {
+          body: `${title} detectado para ${coin.name}`,
+          icon: '/favicon.ico'
+        });
+      } else if ('Notification' in window && Notification.permission !== 'denied') {
+        Notification.requestPermission().then(permission => {
+          if (permission === 'granted') {
+            new Notification('🔔 MarketPulse Señal', {
+              body: `${title} detectado para ${coin.name}`,
+              icon: '/favicon.ico'
+            });
+          }
+        });
+      }
+    }
+  }
+  
+  // Log signal for track record
+  const signalLog = JSON.parse(localStorage.getItem('mp_signal_log') || '[]');
+  signalLog.push({
+    date: new Date().toLocaleDateString(),
+    upProb: combinedUp,
+    recommendation: recoPillKey,
+    price: price
+  });
+  // Keep only last 30 entries
+  if (signalLog.length > 30) signalLog.shift();
+  localStorage.setItem('mp_signal_log', JSON.stringify(signalLog));
 
   els.summaryText.textContent = t('summaryText')
     .replace('{fu}', fundamental.upProb)
@@ -1229,6 +1274,7 @@ function buildSummary(fundamental, technical, trendUp = true) {
     els.recoDetails.appendChild(li);
   });
 
+// Drivers adicionales de explicabilidad\n  if (els.recoDrivers) {\n    els.recoDrivers.innerHTML = '';\n    const drivers = [];\n    if (fundamental.upProb >= 60) drivers.push(t('detFundUp'));\n    else if (fundamental.upProb <= 40) drivers.push(t('detFundDown'));\n    else drivers.push(t('detFundNeutral'));\n    if (technical.rsi !== null) {\n      if (technical.rsi < 30) drivers.push(t('detRSIOverbought').replace('{rsi}', technical.rsi.toFixed(1)));\n      else if (technical.rsi > 70) drivers.push(t('detRSIOversold').replace('{rsi}', technical.rsi.toFixed(1)));\n      else drivers.push(t('detRSINeutral').replace('{rsi}', technical.rsi.toFixed(1)));\n    }\n    if (technical.macd !== undefined) drivers.push(t('detMACD').replace('{macdSign}', technical.macd.toFixed(2)));\n    drivers.push(trendUp ? t('detTrendUp') : t('detTrendDown'));\n    drivers.slice(0, 3).forEach(d => {\n      const li = document.createElement('li');\n      li.textContent = d;\n      els.recoDrivers.appendChild(li);\n    });\n  }
   renderRangeBlock(combinedUp, 100 - combinedUp);
 }
 
@@ -1367,6 +1413,14 @@ async function init() {
 els.themeToggle?.addEventListener('click', () => {
   setTheme(state.theme === 'dark' ? 'light' : 'dark');
 });
+//
+// ---------- Track Record (últimos 30 días) ----------
+const signalLog = JSON.parse(localStorage.getItem('mp_signal_log') || '[]');
+if (signalLog.length > 0) {
+  const hitCount = signalLog.filter(entry => entry.upProb >= 50).length;
+  const hitRate = Math.round((hitCount / signalLog.length) * 100);
+  els.updateTime.textContent = `Actualización · Track Record: ${hitRate}% acierto`;
+}
 // Se pasa setLang directamente. Antes era `() => setLang`, que solo devolvia
 // la funcion sin ejecutarla: el menu se cerraba pero el idioma no cambiaba.
 initLangDropdown(setLang);
@@ -1384,7 +1438,33 @@ if (tvBadgeEl) tvBadgeEl.textContent = '1 min';
 const pairBadgeEl = document.getElementById('pairBadge');
 if (pairBadgeEl) pairBadgeEl.textContent = `${coin.symbol} / USD`;
 const coinBannerEl = document.getElementById('coinBanner');
-if (coinBannerEl) coinBannerEl.textContent = `${coin.name} · ${coin.symbol}`;
+if (coinBannerEl) {
+  coinBannerEl.textContent = `${coin.name} · ${coin.symbol}`;
+  // Star button for watchlist
+  const starBtn = document.createElement('button');
+  starBtn.type = 'button';
+  starBtn.className = 'star-btn';
+  starBtn.title = t('starAdd') + ' ' + coin.name;
+  starBtn.innerHTML = state.watchlist.includes(coin.id) ? '★' : '☆';
+  starBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    let watchlist = JSON.parse(localStorage.getItem('mp_watchlist') || '[]');
+    const idx = watchlist.indexOf(coin.id);
+    if (idx === -1) {
+      watchlist.push(coin.id);
+      starBtn.innerHTML = '★';
+      starBtn.title = t('starRemove') + ' ' + coin.name;
+    } else {
+      watchlist.splice(idx, 1);
+      starBtn.innerHTML = '☆';
+      starBtn.title = t('starAdd') + ' ' + coin.name;
+    }
+    localStorage.setItem('mp_watchlist', JSON.stringify(watchlist));
+    // Dispatch event so other parts of the page can react
+    document.dispatchEvent(new CustomEvent('mp:watchlist-changed', { detail: { coin: coin.id, watchlist } }));
+  });
+  coinBannerEl.appendChild(starBtn);
+}
 
 init();
 

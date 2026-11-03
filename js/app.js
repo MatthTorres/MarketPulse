@@ -534,6 +534,23 @@ function gatedFetch(url, options) {
   fetchGate = run.catch(() => {});
   return run;
 }
+async function loadFundingRate(symbol) {
+  try {
+    const r = await fetch(`https://fapi.binance.com/fapi/v1/fundingRate?symbol=${symbol}&limit=1`);
+    if (!r.ok) return null;
+    const j = await r.json();
+    const fr = j?.[0]?.fundingRate;
+    return fr != null ? parseFloat(fr) * 100 : null;
+  } catch (e) { return null; }
+}
+async function loadOpenInterest(symbol) {
+  try {
+    const r = await fetch(`https://fapi.binance.com/fapi/v1/openInterest?symbol=${symbol}`);
+    if (!r.ok) return null;
+    const j = await r.json();
+    return j?.openInterest != null ? parseFloat(j.openInterest) : null;
+  } catch (e) { return null; }
+}
 const BINANCE_SYMBOL = {
   bitcoin: 'BTCUSDT', ethereum: 'ETHUSDT', solana: 'SOLUSDT',
   ripple: 'XRPUSDT', dogecoin: 'DOGEUSDT',
@@ -1229,6 +1246,16 @@ function renderAnalysis() {
   const e200 = ema(prices, 200);
   const trendUp = e200 == null ? true : price > e200;
   buildSummary(fundamental, technical, trendUp);
+  // Funding rate + Open Interest (cripto, Binance Futures, público)
+  const sym = BINANCE_SYMBOL[coin.id];
+  if (sym) {
+    loadFundingRate(sym).then(fr => {
+      if (fr !== null) addMetricRow(els.fundMetrics, 'Funding rate', `${fr >= 0 ? '+' : ''}${fr.toFixed(4)}%`, fr >= 0 ? 'up' : 'down');
+    });
+    loadOpenInterest(sym).then(oi => {
+      if (oi !== null) addMetricRow(els.fundMetrics, 'Open interest', oi.toLocaleString(), 'neutral');
+    });
+  }
 }
 
 // ---------- Selector de idioma desplegable ----------

@@ -457,33 +457,60 @@ function emaSeries(values, period) {
   return out;
 }
 
+// RSI con suavizado de Wilder (RMA) — estándar TradingView/Binance
 function rsi(values, period = 14) {
   if (values.length < period + 1) return null;
-  let gains = 0, losses = 0;
-  for (let i = values.length - period; i < values.length; i++) {
+  let avgGain = 0, avgLoss = 0;
+  for (let i = 1; i <= period; i++) {
     const diff = values[i] - values[i - 1];
-    if (diff >= 0) gains += diff; else losses -= diff;
+    if (diff >= 0) avgGain += diff; else avgLoss -= diff;
   }
-  const avgGain = gains / period;
-  const avgLoss = losses / period;
+  avgGain /= period; avgLoss /= period;
+  for (let i = period + 1; i < values.length; i++) {
+    const diff = values[i] - values[i - 1];
+    const gain = diff >= 0 ? diff : 0;
+    const loss = diff < 0 ? -diff : 0;
+    avgGain = (avgGain * (period - 1) + gain) / period;
+    avgLoss = (avgLoss * (period - 1) + loss) / period;
+  }
   if (avgLoss === 0) return 100;
   const rs = avgGain / avgLoss;
   return 100 - 100 / (1 + rs);
 }
 
+// ATR (14) para rangos y stops más robustos
+function atr(values, period = 14) {
+  if (values.length < period + 1) return null;
+  const trs = [];
+  for (let i = 1; i < values.length; i++) {
+    const h = values[i], l = values[i];
+    const prev = values[i - 1];
+    trs.push(Math.max(h - l, Math.abs(h - prev), Math.abs(l - prev)));
+  }
+  let atrVal = trs.slice(0, period).reduce((a, b) => a + b, 0) / period;
+  for (let i = period; i < trs.length; i++) {
+    atrVal = (atrVal * (period - 1) + trs[i]) / period;
+  }
+  return atrVal;
+}
+
+function ema200(values) { return ema(values, 200); }
+
 function macd(values) {
-  const ema12 = emaSeries(values, 12);
-  const ema26 = emaSeries(values, 26);
+  const ema12s = emaSeries(values, 12);
+  const ema26s = emaSeries(values, 26);
   const macdLine = [];
   for (let i = 0; i < values.length; i++) {
-    if (ema12[i] !== undefined && ema26[i] !== undefined) {
-      macdLine[i] = ema12[i] - ema26[i];
+    if (ema12s[i] !== undefined && ema26s[i] !== undefined) {
+      macdLine[i] = ema12s[i] - ema26s[i];
     }
   }
   const macdValues = macdLine.filter(v => v !== undefined);
-  const signal = ema(macdValues, 9);
+  const signalSeries = emaSeries(macdValues, 9);
+  const signal = signalSeries[signalSeries.length - 1];
   const macdNow = macdValues[macdValues.length - 1];
-  return { macd: macdNow, signal, histogram: macdNow - signal };
+  const histogram = macdNow - signal;
+  return { macd: macdNow, signal, histogram };
 }
 
 // ---------- Fetch de datos (con reintento ante rate-limit/red) ----------

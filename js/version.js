@@ -9,7 +9,7 @@
 // absolutas: canonical, og:url, og:image, twitter:image, robots.txt y
 // sitemap.xml). Si algún día cambia el hosting, se rehace con:
 //   python tools/set_site_origin.py <url>
-const APP_VERSION = '3.9.0';
+const APP_VERSION = '3.10.0';
 const APP_RELEASE = {
   es: '28 de septiembre de 2026',
   en: 'September 28, 2026',

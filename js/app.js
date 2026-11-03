@@ -1169,15 +1169,16 @@ function renderTradeLevels(price, sigma, meanAbs, high, low, upProb) {
   }
 }
 
-function buildSummary(fundamental, technical) {
+function buildSummary(fundamental, technical, trendUp = true) {
   const combinedUp = Math.round(fundamental.upProb * 0.45 + technical.upProb * 0.55);
 
   els.combinedCircle.style.setProperty('--pct', `${combinedUp}%`);
   els.combinedPct.textContent = `${combinedUp}%`;
 
   let recoKey, recoClass, recoPillKey;
-  if (combinedUp >= 62) { recoKey = 'recoBuyText'; recoClass = 'buy'; recoPillKey = 'recoBuy'; }
-  else if (combinedUp <= 38) { recoKey = 'recoSellText'; recoClass = 'sell'; recoPillKey = 'recoSell'; }
+  // Filtro de tendencia: COMPRA solo si precio > EMA200; VENTA solo si precio < EMA200.
+  if (combinedUp >= 62 && trendUp) { recoKey = 'recoBuyText'; recoClass = 'buy'; recoPillKey = 'recoBuy'; }
+  else if (combinedUp <= 38 && !trendUp) { recoKey = 'recoSellText'; recoClass = 'sell'; recoPillKey = 'recoSell'; }
   else { recoKey = 'recoHoldText'; recoClass = 'hold'; recoPillKey = 'recoHold'; }
 
   els.recoPill.textContent = t(recoPillKey);
@@ -1225,7 +1226,9 @@ function renderAnalysis() {
   els.priceChange.className = `price-change ${change24h >= 0 ? 'up' : 'down'}`;
   const fundamental = analyzeFundamental(market, fng);
   const technical = analyzeTechnical(prices);
-  buildSummary(fundamental, technical);
+  const e200 = ema(prices, 200);
+  const trendUp = e200 == null ? true : price > e200;
+  buildSummary(fundamental, technical, trendUp);
 }
 
 // ---------- Selector de idioma desplegable ----------

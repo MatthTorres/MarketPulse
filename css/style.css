@@ -860,3 +860,95 @@ h1, h2 { font-family: 'Sora', sans-serif; }
   .tv-wrap { height: 400px; }
   .cards-grid { grid-template-columns: 1fr; }
 }
+
+/* ---------- Macro Calendario ---------- */
+.macro-subtitle {
+  font-size: 0.78rem;
+  color: var(--text-2);
+  margin-bottom: 10px;
+  display: block;
+}
+.macro-events {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.macro-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--surface-border);
+  background: var(--surface);
+  font-size: 0.84rem;
+}
+.macro-row.high { border-left: 3px solid var(--down); }
+.macro-row.medium { border-left: 3px solid var(--neutral); }
+.macro-row.low { border-left: 3px solid var(--text-2); }
+.macro-row.macro-urgent {
+  background: rgba(242,169,0,0.15);
+  border-color: var(--accent);
+  animation: macroPulse 2s infinite;
+}
+.macro-date {
+  flex: 0 0 70px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-1);
+  white-space: nowrap;
+}
+.macro-event {
+  flex: 1;
+  font-size: 0.84rem;
+  color: var(--text-0);
+  font-weight: 600;
+}
+.macro-impact {
+  flex: 0 0 90px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--text-2);
+}
+.macro-row.high .macro-impact { color: var(--down); }
+.macro-row.medium .macro-impact { color: var(--neutral); }
+.macro-row.low .macro-impact { color: var(--text-2); }
+.macro-assets {
+  flex: 0 0 120px;
+  font-size: 0.72rem;
+  color: var(--text-2);
+  font-family: 'Sora', sans-serif;
+  font-weight: 600;
+}
+.macro-empty {
+  font-size: 0.82rem;
+  color: var(--text-2);
+  text-align: center;
+  padding: 16px;
+}
+.macro-alert {
+  background: rgba(255,93,108,0.12);
+  border: 1px solid rgba(255,93,108,0.35);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  font-size: 0.82rem;
+  color: var(--text-0);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: macroPulse 2s infinite;
+}
+@keyframes macroPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@media (max-width: 640px) {
+  .macro-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .macro-date { flex: none; margin-bottom: 2px; }
+  .macro-impact { flex: none; margin-bottom: 2px; }
+  .macro-assets { flex: none; }
+}

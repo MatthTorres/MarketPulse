@@ -16,6 +16,24 @@ const COINS = {
   dogecoin: { id: 'dogecoin', tv: 'BINANCE:DOGEUSDT', name: 'Dogecoin', symbol: 'DOGE' },
 };
 
+// ---------- Calendario Macro (JSON estático, sin backend) ----------
+// Eventos de alto impacto para Forex y Metales (próximas 3-4 semanas).
+// Fuente: fechas aproximadas de calendario económico público (no se necesita API).
+const MACRO_EVENTS = [
+  { date: '2026-03-12', event: 'macroECB', impact: 'high', assets: ['EUR', 'XAU', 'EURUSD'] },
+  { date: '2026-03-13', event: 'macroCPI', impact: 'high', assets: ['USD', 'BTC', 'XAU'] },
+  { date: '2026-03-14', event: 'macroRetailSales', impact: 'medium', assets: ['USD', 'USDCAD'] },
+  { date: '2026-03-17', event: 'macroCPI', impact: 'medium', assets: ['GBP', 'GBPUSD'] },
+  { date: '2026-03-18', event: 'macroFOMC', impact: 'medium', assets: ['USD', 'BTC', 'XAU'] },
+  { date: '2026-03-19', event: 'macroBOE', impact: 'medium', assets: ['GBP', 'GBPUSD'] },
+  { date: '2026-03-20', event: 'macroNFP', impact: 'high', assets: ['USD', 'BTC', 'XAU'] },
+  { date: '2026-03-21', event: 'macroGDP', impact: 'medium', assets: ['EUR', 'EURUSD'] },
+  { date: '2026-03-24', event: 'macroIndustrialProd', impact: 'low', assets: ['USD', 'USDCAD'] },
+  { date: '2026-03-26', event: 'macroTradeBalance', impact: 'medium', assets: ['CNY', 'USDCNH'] },
+  { date: '2026-03-27', event: 'macroCPI', impact: 'medium', assets: ['JPY', 'USDJPY'] },
+  { date: '2026-03-28', event: 'macroRetailSales', impact: 'low', assets: ['USD', 'BTC'] },
+];
+
 const coinParam = new URLSearchParams(location.search).get('coin');
 const coinKey = COINS[coinParam] ? coinParam : 'bitcoin';
 const coin = COINS[coinKey];
@@ -154,6 +172,22 @@ const I18N = {
     tradeTarget: 'Precio de salida',
     tradeRR: 'Ratio beneficio / riesgo',
     tradeNote: 'Tres perfiles para la operación de hoy según tu tolerancia al riesgo. Conservador: espera un retroceso, stop estrecho para arriesgar poco por operación y salida temprana. Medio: retroceso leve, stop estándar y salida en el extremo estimado del día. Arriesgado: entrada a mercado, stop amplio que aguanta el ruido y salida en extensión. Niveles estadísticos; no es asesoría financiera.',
+    macroTitle: 'Calendario Macro Semanal',
+    macroSubtitle: 'Eventos de alto impacto para Forex y Metales',
+    macroImpactHigh: 'Alto impacto',
+    macroImpactMedium: 'Impacto medio',
+    macroImpactLow: 'Bajo impacto',
+    macroWithin24h: '¡Evento en las próximas 24h!',
+    macroNoEvents: 'No hay eventos macro programados para los próximos días.',
+    macroCPI: 'CPI (Inflación)',
+    macroNFP: 'NFP (Nóminas no agrícolas)',
+    macroFOMC: 'Decisión de tipos de la Fed',
+    macroECB: 'Decisión de tipos del BCE',
+    macroBOE: 'Decisión de tipos del Banco de Inglaterra',
+    macroGDP: 'PIB',
+    macroRetailSales: 'Ventas minoristas',
+    macroIndustrialProd: 'Producción industrial',
+    macroTradeBalance: 'Balanza comercial',
     summaryText: 'Combinando el análisis fundamental ({fu}% de probabilidad de subida) con el análisis técnico ({tu}% de probabilidad de subida), el modelo estima una probabilidad combinada de subida del {cu}% para hoy, {date}. Recomendación profesional: {reco}.',
   },
   pt: {
@@ -247,6 +281,22 @@ const I18N = {
     tradeTarget: 'Preço de saída',
     tradeRR: 'Rácio ganho / risco',
     tradeNote: 'Três perfis para a operação de hoje conforme a sua tolerância ao risco. Conservador: espera um recuo, stop apertado para arriscar pouco por operação e saída antecipada. Moderado: recuo ligeiro, stop padrão e saída na extremidade estimada do dia. Agressivo: entrada a mercado, stop largo que aguenta o ruído e saída em extensão. Níveis estatísticos; não é consultoria financeira.',
+    macroTitle: 'Calendário Macro Semanal',
+    macroSubtitle: 'Eventos de alto impacto para Forex e Metais',
+    macroImpactHigh: 'Alto impacto',
+    macroImpactMedium: 'Impacto médio',
+    macroImpactLow: 'Baixo impacto',
+    macroWithin24h: 'Evento nas próximas 24h!',
+    macroNoEvents: 'Não há eventos macro programados para os próximos dias.',
+    macroCPI: 'CPI (Inflação)',
+    macroNFP: 'NFP (Payrolls não agrícolas)',
+    macroFOMC: 'Decisão de juros do Fed',
+    macroECB: 'Decisão de juros do BCE',
+    macroBOE: 'Decisão de juros do Banco de Inglaterra',
+    macroGDP: 'PIB',
+    macroRetailSales: 'Vendas no varejo',
+    macroIndustrialProd: 'Produção industrial',
+    macroTradeBalance: 'Balança comercial',
     summaryText: 'Combinando a análise fundamental ({fu}% de probabilidade de alta) com a análise técnica ({tu}% de probabilidade de alta), o modelo estima uma probabilidade combinada de alta de {cu}% para hoje, {date}. Recomendação profissional: {reco}.',
   },
   en: {
@@ -340,6 +390,22 @@ const I18N = {
     tradeTarget: 'Exit price',
     tradeRR: 'Reward / risk ratio',
     tradeNote: 'Three profiles for today’s trade based on your risk tolerance. Conservative: waits for a pullback, tight stop to risk little per trade and early exit. Medium: mild pullback, standard stop and exit at the estimated day extreme. Aggressive: market entry, wide stop that absorbs noise and extension exit. Statistical levels; not financial advice.',
+    macroTitle: 'Weekly Macro Calendar',
+    macroSubtitle: 'High-impact events for Forex and Metals',
+    macroImpactHigh: 'High impact',
+    macroImpactMedium: 'Medium impact',
+    macroImpactLow: 'Low impact',
+    macroWithin24h: 'Event within the next 24h!',
+    macroNoEvents: 'No macro events scheduled for the coming days.',
+    macroCPI: 'CPI (Inflation)',
+    macroNFP: 'NFP (Non-Farm Payrolls)',
+    macroFOMC: 'Fed rate decision',
+    macroECB: 'ECB rate decision',
+    macroBOE: 'Bank of England rate decision',
+    macroGDP: 'GDP',
+    macroRetailSales: 'Retail sales',
+    macroIndustrialProd: 'Industrial production',
+    macroTradeBalance: 'Trade balance',
     summaryText: 'Combining the fundamental analysis ({fu}% probability of going up) with the technical analysis ({tu}% probability of going up), the model estimates a combined upside probability of {cu}% for today, {date}. Professional recommendation: {reco}.',
     starAdd: 'Add to watchlist',
     starRemove: 'Remove from watchlist',
@@ -1302,6 +1368,72 @@ function renderAnalysis() {
       if (oi !== null) addMetricRow(els.fundMetrics, 'Open interest', oi.toLocaleString(), 'neutral');
     });
   }
+
+  // Macro Calendario (eventos estáticos)
+  renderMacroCalendar();
+}
+
+// ---------- Macro Calendario: render de eventos semanales ----------
+function renderMacroCalendar() {
+  const container = document.getElementById('macroEvents');
+  if (!container) return;
+
+  const locale = LOC_BY_LANG[state.lang] || 'es-ES';
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  // Filtrar eventos desde hoy en adelante (próximos 30 días)
+  const upcoming = MACRO_EVENTS.filter(ev => {
+    const evDate = new Date(ev.date + 'T00:00:00');
+    return evDate >= today && evDate <= new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000);
+  });
+
+  // Ordenar por fecha
+  upcoming.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+  // Detectar evento dentro de las próximas 24h para alerta
+  const within24h = upcoming.find(ev => {
+    const evDate = new Date(ev.date + 'T00:00:00');
+    const diffHours = (evDate - today) / (1000 * 60 * 60);
+    return diffHours >= 0 && diffHours <= 24;
+  });
+
+  container.innerHTML = '';
+
+  if (upcoming.length === 0) {
+    container.innerHTML = `<p class="macro-empty">${t('macroNoEvents')}</p>`;
+    return;
+  }
+
+  // Alerta visual si hay evento en las próximas 24h
+  if (within24h) {
+    const alert = document.createElement('div');
+    alert.className = 'macro-alert';
+    alert.innerHTML = `<strong>⚠️ ${t('macroWithin24h')}</strong> ${t(within24h.event)} — ${new Date(within24h.date).toLocaleDateString(locale, { weekday: 'short', day: 'numeric', month: 'short' })}`;
+    container.appendChild(alert);
+  }
+
+  upcoming.forEach(ev => {
+    const evDate = new Date(ev.date + 'T00:00:00');
+    const diffHours = (evDate - today) / (1000 * 60 * 60);
+    const isWithin24h = diffHours >= 0 && diffHours <= 24;
+
+    const row = document.createElement('div');
+    row.className = `macro-row ${ev.impact} ${isWithin24h ? 'macro-urgent' : ''}`;
+
+    const dateStr = evDate.toLocaleDateString(locale, { weekday: 'short', day: 'numeric', month: 'short' });
+    const impactLabel = t(`macroImpact${ev.impact.charAt(0).toUpperCase() + ev.impact.slice(1)}`);
+    const eventLabel = t(ev.event);
+    const assetsLabel = ev.assets.join(' · ');
+
+    row.innerHTML = `
+      <span class="macro-date">${dateStr}</span>
+      <span class="macro-event">${eventLabel}</span>
+      <span class="macro-impact">${impactLabel}</span>
+      <span class="macro-assets">${assetsLabel}</span>
+    `;
+    container.appendChild(row);
+  });
 }
 
 // ---------- Selector de idioma desplegable ----------

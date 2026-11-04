@@ -34,6 +34,10 @@
 <link rel="dns-prefetch" href="https://s3.tradingview.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=11">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#f2a900">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
 </head>
 <body data-page="analysis">
   <div class="bg-glow"></div>
@@ -240,6 +244,11 @@
   <!-- Analitica: Umami Cloud. Sin cookies y con IP anonimizada, por eso no
        hay banner de consentimiento. Ver el punto 5 de legal.html. -->
   <script defer src="https://cloud.umami.is/script.js" data-website-id="4cf0d311-0c95-4144-ac88-d9d34998c5bc"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(err => console.warn('SW registration failed:', err));
+    }
+  </script>
 </body>
 </html>
 

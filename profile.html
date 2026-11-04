@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MarketPulse — Mi Perfil</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="logo-dot"></span><span class="logo-text">MarketPulse</span></div>
+    <nav class="nav-links">
+      <a href="index.html">Inicio</a>
+      <a href="analysis.html">Análisis</a>
+      <a href="pricing.html">Planes</a>
+      <a href="#" id="logoutBtn" class="auth-btn">Cerrar sesión</a>
+    </nav>
+  </header>
+  <main class="profile-page">
+    <div class="profile-card" id="profileCard">
+      <div class="profile-loading">Cargando perfil…</div>
+    </div>
+  </main>
+  <script>
+    async function loadProfile() {
+      const session = await MarketPulseAuth.getSession();
+      if (!session) {
+        window.location.href = 'login.html';
+        return;
+      }
+      const user = session.user;
+      const profile = await MarketPulseAuth.getUserProfile(user.id).catch(() => null);
+      const subscription = await MarketPulseAuth.getUserSubscription(user.id).catch(() => null);
+
+      const card = document.getElementById('profileCard');
+      card.innerHTML = `
+        <div class="profile-header">
+          <div class="profile-avatar">${(user.user_metadata?.full_name || user.email)[0].toUpperCase()}</div>
+          <div class="profile-info">
+            <h1>${user.user_metadata?.full_name || 'Usuario'}</h1>
+            <p>${user.email}</p>
+          </div>
+          <div class="profile-badge ${subscription ? 'premium' : 'free'}">
+            ${subscription ? '⭐ Premium' : 'Free'}
+          </div>
+        </div>
+        <div class="profile-section">
+          <h2>Suscripción</h2>
+          ${subscription ? `
+            <p>Plan: <strong>${subscription.plans?.name || 'Premium'}</strong></p>
+            <p>Estado: <strong>${subscription.status}</strong></p>
+            <p>Próximo pago: <strong>${new Date(subscription.current_period_end).toLocaleDateString()}</strong></p>
+            <button class="btn btn-secondary" id="cancelSubBtn">Cancelar suscripción</button>
+          ` : `
+            <p>No tienes una suscripción activa.</p>
+            <a href="pricing.html" class="btn btn-primary">Ver planes Premium</a>
+          `}
+        </div>
+        <div class="profile-section">
+          <h2>Datos de la cuenta</h2>
+          <p>Miembro desde: <strong>${new Date(user.created_at).toLocaleDateString()}</strong></p>
+          <p>Último acceso: <strong>${new Date(user.last_sign_in_at).toLocaleDateString()}</strong></p>
+        </div>
+      `;
+
+      document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+        e.preventDefault();
+        await MarketPulseAuth.signOut();
+        window.location.href = 'index.html';
+      });
+
+      const cancelBtn = document.getElementById('cancelSubBtn');
+      if (cancelBtn) {
+        cancelBtn.addEventListener('click', () => {
+          alert('Para cancelar, contacta soporte. Próximamente disponible desde aquí.');
+        });
+      }
+    }
+    loadProfile();
+  </script>
+</body>
+</html>

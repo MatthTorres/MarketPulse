@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MarketPulse — Planes y Precios</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="logo-dot"></span><span class="logo-text">MarketPulse</span></div>
+    <nav class="nav-links">
+      <a href="index.html">Inicio</a>
+      <a href="analysis.html">Análisis</a>
+      <a href="pricing.html" class="active">Planes</a>
+      <a href="login.html" class="auth-btn">Iniciar sesión</a>
+    </nav>
+  </header>
+  <main class="pricing-page">
+    <section class="pricing-hero">
+      <h1>Elige tu plan</h1>
+      <p>Desbloquea análisis avanzados, alertas en tiempo real y herramientas premium para tomar mejores decisiones.</p>
+    </section>
+    <section class="pricing-grid" id="pricingGrid">
+      <div class="pricing-card free">
+        <div class="pricing-header">
+          <h2>Free</h2>
+          <div class="pricing-price"><span class="price-amount">$0</span><span class="price-period">/mes</span></div>
+        </div>
+        <ul class="pricing-features">
+          <li>✅ Análisis técnico básico (RSI, MACD, EMA)</li>
+          <li>✅ Precio en tiempo real</li>
+          <li>✅ Calendario macro (solo vista)</li>
+          <li>✅ Noticias del mes</li>
+          <li>❌ Alertas push de eventos</li>
+          <li>❌ Análisis fundamental avanzado</li>
+          <li>❌ Señales de trading</li>
+          <li>❌ Soporte prioritario</li>
+        </ul>
+        <button class="btn btn-secondary pricing-cta" onclick="window.location.href='login.html'">Comenzar gratis</button>
+      </div>
+      <div class="pricing-card premium featured">
+        <div class="pricing-badge">Recomendado</div>
+        <div class="pricing-header">
+          <h2>Premium</h2>
+          <div class="pricing-price"><span class="price-amount">$9.99</span><span class="price-period">/mes</span></div>
+          <p class="pricing-annual">o $79.99/año (ahorra 33%)</p>
+        </div>
+        <ul class="pricing-features">
+          <li>✅ Todo lo de Free</li>
+          <li>✅ Análisis fundamental avanzado (Fear & Greed, funding rate, open interest)</li>
+          <li>✅ Señales de trading con niveles de entrada/salida</li>
+          <li>✅ Alertas push de eventos macro de alto impacto</li>
+          <li>✅ Watchlist personalizada</li>
+          <li>✅ Historial de análisis guardado</li>
+          <li>✅ Soporte prioritario</li>
+          <li>✅ Sin anuncios</li>
+        </ul>
+        <button class="btn btn-primary pricing-cta" id="subscribeBtn">Suscribirse a Premium</button>
+      </div>
+    </section>
+    <section class="pricing-comparison">
+      <h2>Comparación detallada</h2>
+      <table class="comparison-table">
+        <thead>
+          <tr><th>Característica</th><th>Free</th><th>Premium</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Análisis técnico (RSI, MACD, EMA, Bollinger)</td><td>✅</td><td>✅</td></tr>
+          <tr><td>Precio en tiempo real</td><td>✅</td><td>✅</td></tr>
+          <tr><td>Calendario macro semanal</td><td>Solo vista</td><td>Completo + alertas</td></tr>
+          <tr><td>Noticias del mes</td><td>✅</td><td>✅</td></tr>
+          <tr><td>Fear & Greed Index</td><td>❌</td><td>✅</td></tr>
+          <tr><td>Funding rate & Open Interest</td><td>❌</td><td>✅</td></tr>
+          <tr><td>Señales de trading (entrada/salida/stop)</td><td>❌</td><td>✅</td></tr>
+          <tr><td>Alertas push de eventos macro</td><td>❌</td><td>✅</td></tr>
+          <tr><td>Watchlist personalizada</td><td>❌</td><td>✅</td></tr>
+          <tr><td>Historial de análisis</td><td>❌</td><td>✅</td></tr>
+          <tr><td>Soporte prioritario</td><td>❌</td><td>✅</td></tr>
+          <tr><td>Anuncios</td><td>Sí</td><td>Sin anuncios</td></tr>
+        </tbody>
+      </table>
+    </section>
+    <section class="pricing-faq">
+      <h2>Preguntas frecuentes</h2>
+      <div class="faq-item">
+        <h3>¿Puedo cancelar en cualquier momento?</h3>
+        <p>Sí, puedes cancelar tu suscripción en cualquier momento desde tu perfil. No hay compromisos a largo plazo.</p>
+      </div>
+      <div class="faq-item">
+        <h3>¿Qué métodos de pago aceptan?</h3>
+        <p>Aceptamos tarjetas de crédito/débito (Visa, Mastercard, Amex) a través de Stripe. También PayPal próximamente.</p>
+      </div>
+      <div class="faq-item">
+        <h3>¿Los datos son seguros?</h3>
+        <p>Sí, usamos Supabase con Row Level Security. Tus datos están encriptados y solo tú puedes acceder a ellos.</p>
+      </div>
+      <div class="faq-item">
+        <h3>¿Hay reembolsos?</h3>
+        <p>Ofrecemos reembolso completo dentro de los primeros 14 días si no estás satisfecho.</p>
+      </div>
+    </section>
+  </main>
+  <script>
+    document.getElementById('subscribeBtn').addEventListener('click', async () => {
+      const session = await MarketPulseAuth.getSession();
+      if (!session) {
+        window.location.href = 'login.html?redirect=pricing';
+        return;
+      }
+      // TODO: Integrar Stripe Checkout via Supabase Edge Function
+      alert('Integración de pago con Stripe próximamente. Por ahora, contacta soporte.');
+    });
+  </script>
+</body>
+</html>

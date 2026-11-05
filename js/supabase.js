@@ -40,15 +40,30 @@ async function signIn(email, password) {
   return data;
 }
 
-async function signInWithGoogle() {
+async function signInWithGoogle(redirectTo) {
   const sb = initSupabase();
   if (!sb) throw new Error('Supabase not initialized');
+  const dest = redirectTo || localStorage.getItem('mp_auth_redirect') || (window.location.origin + '/profile.html');
   const { data, error } = await sb.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: window.location.origin + '/profile.html' }
+    options: { redirectTo: dest }
   });
   if (error) throw error;
   return data;
+}
+
+function getAuthRedirect() {
+  return localStorage.getItem('mp_auth_redirect') || (window.location.origin + '/profile.html');
+}
+
+function setAuthRedirect(url) {
+  if (url && !url.includes('login.html')) {
+    localStorage.setItem('mp_auth_redirect', url);
+  }
+}
+
+function clearAuthRedirect() {
+  localStorage.removeItem('mp_auth_redirect');
 }
 
 async function signOut() {
@@ -152,4 +167,7 @@ window.MarketPulseAuth = {
   getPlans,
   onAuthStateChange,
   updateAuthUI,
+  getAuthRedirect,
+  setAuthRedirect,
+  clearAuthRedirect,
 };

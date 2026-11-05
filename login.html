@@ -90,6 +90,28 @@
     // Toggle de visibilidad de contraseña
     const passwordToggle = document.getElementById('passwordToggle');
     const passwordInput = document.getElementById('password');
+
+    // Guardar destino de redirección (viene de ?redirect= o del referrer)
+    const urlParams = new URLSearchParams(location.search);
+    const redirectDest = urlParams.get('redirect');
+    if (redirectDest) {
+      MarketPulseAuth.setAuthRedirect(window.location.origin + '/' + redirectDest);
+    } else if (document.referrer && !document.referrer.includes('login.html')) {
+      MarketPulseAuth.setAuthRedirect(document.referrer);
+    }
+
+    // Mostrar overlay de carga durante redirección
+    function showRedirectOverlay(msg) {
+      const overlay = document.createElement('div');
+      overlay.id = 'redirectOverlay';
+      overlay.style.cssText = 'position:fixed;inset:0;background:rgba(11,15,23,0.9);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:16px;';
+      overlay.innerHTML = `
+        <div style="width:48px;height:48px;border:4px solid var(--surface-border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+        <p style="color:var(--text-0);font-size:1rem;font-weight:600;">${msg || 'Redirigiendo…'}</p>
+        <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+      `;
+      document.body.appendChild(overlay);
+    }
     passwordToggle.addEventListener('click', () => {
       const isPassword = passwordInput.type === 'password';
       passwordInput.type = isPassword ? 'text' : 'password';
@@ -134,7 +156,10 @@
           await MarketPulseAuth.signIn(email, password);
           authMessage.textContent = '¡Bienvenido! Redirigiendo…';
           authMessage.className = 'auth-message success';
-          setTimeout(() => window.location.href = 'profile.html', 1000);
+          showRedirectOverlay('¡Bienvenido! Redirigiendo…');
+          const dest = MarketPulseAuth.getAuthRedirect();
+          MarketPulseAuth.clearAuthRedirect();
+          setTimeout(() => window.location.href = dest, 800);
         } else {
           await MarketPulseAuth.signUp(email, password, fullName);
           authMessage.textContent = 'Cuenta creada. Revisa tu email para confirmar.';
@@ -154,9 +179,12 @@
       btn.disabled = true;
       btn.textContent = 'Redirigiendo…';
       try {
+        showRedirectOverlay('Conectando con Google…');
         await MarketPulseAuth.signInWithGoogle();
       } catch (err) {
         console.error('Google OAuth error:', err);
+        const overlay = document.getElementById('redirectOverlay');
+        if (overlay) overlay.remove();
         authMessage.textContent = err.message || 'Error con Google. Verifica que Google OAuth esté habilitado en Supabase.';
         authMessage.className = 'auth-message error';
         btn.disabled = false;
@@ -165,7 +193,11 @@
     });
 
     MarketPulseAuth.getSession().then(session => {
-      if (session) window.location.href = 'profile.html';
+      if (session) {
+        const dest = MarketPulseAuth.getAuthRedirect();
+        MarketPulseAuth.clearAuthRedirect();
+        window.location.href = dest;
+      }
     });
   </script>
 </body>

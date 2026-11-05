@@ -62,7 +62,7 @@
           <li>❌ Señales de trading</li>
           <li>❌ Soporte prioritario</li>
         </ul>
-        <button class="btn btn-secondary pricing-cta" onclick="window.location.href='login.html'">Comenzar gratis</button>
+        <button class="btn btn-secondary pricing-cta" onclick="MarketPulseAuth.setAuthRedirect(window.location.href);window.location.href='login.html?redirect=pricing.html'">Comenzar gratis</button>
       </div>
       <div class="pricing-card premium featured">
         <div class="pricing-badge">Recomendado</div>
@@ -130,7 +130,8 @@
     document.getElementById('subscribeBtn').addEventListener('click', async () => {
       const session = await MarketPulseAuth.getSession();
       if (!session) {
-        window.location.href = 'login.html?redirect=pricing';
+        MarketPulseAuth.setAuthRedirect(window.location.href);
+        window.location.href = 'login.html?redirect=pricing.html';
         return;
       }
       // TODO: Integrar Stripe Checkout via Supabase Edge Function

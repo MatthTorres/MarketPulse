@@ -1,7 +1,7 @@
 // ---------- Supabase Configuration ----------
 // Reemplaza estos valores con los de tu proyecto en https://supabase.com/dashboard
-const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co';
-const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY';
+const SUPABASE_URL = 'https://lqohuqedsylthwpnufvt.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_UhSEeUKq6ANkGqlDZ0e46g_HN8hymto';
 
 // Cargar el SDK de Supabase desde CDN
 // <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

@@ -16,9 +16,50 @@ const COINS = {
   dogecoin: { id: 'dogecoin', tv: 'BINANCE:DOGEUSDT', name: 'Dogecoin', symbol: 'DOGE' },
 };
 
+// ---------- Datos de noticias con análisis de impacto por activo ----------
+const NEWS_DATABASE = [
+  {
+    id: 'n1', date: '2026-03-11', title: 'CPI de EE.UU. supera expectativas: inflación sube al 3.2%', source: 'Reuters', url: '#', category: 'macro',
+    summary: 'El índice de precios al consumidor muestra una subida del 3.2% interanual, por encima del 2.9% esperado. La Fed podría mantener las tasas altas.',
+    impacts: [
+      { asset: 'bitcoin', direction: 'bearish', reason: 'Inflación alta reduce expectativas de recortes de tasas, presiona activos de riesgo.' },
+      { asset: 'xau', direction: 'bullish', reason: 'El oro se beneficia como refugio ante incertidumbre inflacionaria.' },
+      { asset: 'eurusd', direction: 'bearish', reason: 'Dólar fuerte por tasas altas presiona EUR/USD.' },
+    ],
+  },
+  {
+    id: 'n2', date: '2026-03-12', title: 'BCE mantiene tipos de interés sin cambios en 3.75%', source: 'Bloomberg', url: '#', category: 'forex',
+    summary: 'El BCE mantiene sus tipos de referencia, señalizando cautela ante la desaceleración de la zona euro.',
+    impacts: [
+      { asset: 'eurusd', direction: 'bearish', reason: 'Sin cambios en tasas presiona al euro frente al dólar.' },
+      { asset: 'bitcoin', direction: 'neutral', reason: 'El mercado cripto está enfocado en EE.UU.' },
+    ],
+  },
+  {
+    id: 'n3', date: '2026-03-13', title: 'Bitcoin supera los $85,000 por entrada institucional récord', source: 'CoinDesk', url: '#', category: 'crypto',
+    summary: 'Bitcoin rompe los $85,000 impulsado por entradas récord de ETFs. BlackRock y Fidelity acumulan $2,500 millones en una semana.',
+    impacts: [
+      { asset: 'bitcoin', direction: 'bullish', reason: 'Flujos institucionales masivos impulsan el precio.' },
+      { asset: 'ethereum', direction: 'bullish', reason: 'Sentimiento positivo se extiende a ETH.' },
+      { asset: 'solana', direction: 'bullish', reason: 'Las altcoins se benefician del rally de BTC.' },
+    ],
+  },
+];
+
+const ASSET_INFO = {
+  bitcoin:  { name: 'Bitcoin',  symbol: 'BTC',   type: 'crypto',  icon: '₿' },
+  ethereum: { name: 'Ethereum', symbol: 'ETH',   type: 'crypto',  icon: 'Ξ' },
+  solana:   { name: 'Solana',   symbol: 'SOL',   type: 'crypto',  icon: '◎' },
+  xrp:      { name: 'XRP',      symbol: 'XRP',   type: 'crypto',  icon: '✕' },
+  dogecoin: { name: 'Dogecoin', symbol: 'DOGE',  type: 'crypto',  icon: 'Ð' },
+  xau:      { name: 'Oro',      symbol: 'XAU',   type: 'metal',   icon: '🥇' },
+  xpt:      { name: 'Platino',  symbol: 'XPT',   type: 'metal',   icon: '🥈' },
+  eurusd:   { name: 'EUR/USD',  symbol: 'EURUSD', type: 'forex',  icon: '💱' },
+  gbpusd:   { name: 'GBP/USD',  symbol: 'GBPUSD', type: 'forex',  icon: '💱' },
+  usdjpy:   { name: 'USD/JPY',  symbol: 'USDJPY', type: 'forex',  icon: '💱' },
+};
+
 // ---------- Calendario Macro (JSON estático, sin backend) ----------
-// Eventos de alto impacto para Forex y Metales (próximas 3-4 semanas).
-// Fuente: fechas aproximadas de calendario económico público (no se necesita API).
 const MACRO_EVENTS = [
   { date: '2026-03-12', event: 'macroECB', impact: 'high', assets: ['EUR', 'XAU', 'EURUSD'] },
   { date: '2026-03-13', event: 'macroCPI', impact: 'high', assets: ['USD', 'BTC', 'XAU'] },

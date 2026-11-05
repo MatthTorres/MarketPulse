@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MarketPulse — Noticia</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="logo-dot"></span><span class="logo-text">MarketPulse</span></div>
+    <nav class="nav-links">
+      <a href="index.html">Inicio</a>
+      <a href="analysis.html">Análisis</a>
+      <a href="pricing.html">Planes</a>
+      <a href="login.html" class="auth-btn">Iniciar sesión</a>
+    </nav>
+  </header>
+
+  <main class="news-detail-page">
+    <div class="news-detail-container">
+      <a href="index.html" class="news-back-link">← Volver al inicio</a>
+      <div class="news-detail-card" id="newsDetailCard">
+        <div class="news-detail-loading">Cargando noticia…</div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // ---------- Base de datos de noticias con análisis de impacto ----------
+    const NEWS_DB = [
+      {
+        id: 'n1', date: '2026-03-11', title: 'CPI de EE.UU. supera expectativas: inflación sube al 3.2%', source: 'Reuters', category: 'macro',
+        summary: 'El índice de precios al consumidor muestra una subida del 3.2% interanual, por encima del 2.9% esperado. La Fed podría mantener las tasas altas.',
+        impacts: [
+          { asset: 'Bitcoin', symbol: 'BTC', type: 'Cripto', direction: 'bearish', reason: 'Inflación alta reduce expectativas de recortes de tasas, presiona activos de riesgo.' },
+          { asset: 'Oro', symbol: 'XAU', type: 'Metal', direction: 'bullish', reason: 'El oro se beneficia como refugio ante incertidumbre inflacionaria.' },
+          { asset: 'EUR/USD', symbol: 'EURUSD', type: 'Forex', direction: 'bearish', reason: 'Dólar fuerte por tasas altas presiona EUR/USD.' },
+        ],
+      },
+      {
+        id: 'n2', date: '2026-03-12', title: 'BCE mantiene tipos de interés sin cambios en 3.75%', source: 'Bloomberg', category: 'forex',
+        summary: 'El BCE mantiene sus tipos de referencia, señalizando cautela ante la desaceleración de la zona euro.',
+        impacts: [
+          { asset: 'EUR/USD', symbol: 'EURUSD', type: 'Forex', direction: 'bearish', reason: 'Sin cambios en tasas presiona al euro frente al dólar.' },
+          { asset: 'Bitcoin', symbol: 'BTC', type: 'Cripto', direction: 'neutral', reason: 'El mercado cripto está enfocado en EE.UU.' },
+        ],
+      },
+      {
+        id: 'n3', date: '2026-03-13', title: 'Bitcoin supera los $85,000 por entrada institucional récord', source: 'CoinDesk', category: 'crypto',
+        summary: 'Bitcoin rompe los $85,000 impulsado por entradas récord de ETFs. BlackRock y Fidelity acumulan $2,500 millones en una semana.',
+        impacts: [
+          { asset: 'Bitcoin', symbol: 'BTC', type: 'Cripto', direction: 'bullish', reason: 'Flujos institucionales masivos impulsan el precio.' },
+          { asset: 'Ethereum', symbol: 'ETH', type: 'Cripto', direction: 'bullish', reason: 'Sentimiento positivo se extiende a ETH.' },
+          { asset: 'Solana', symbol: 'SOL', type: 'Cripto', direction: 'bullish', reason: 'Las altcoins se benefician del rally de BTC.' },
+        ],
+      },
+    ];
+
+    const params = new URLSearchParams(location.search);
+    const newsId = params.get('id') || 'n1';
+    const news = NEWS_DB.find(n => n.id === newsId) || NEWS_DB[0];
+
+    const dirLabels = { bullish: 'Alcista ↑', bearish: 'Bajista ↓', neutral: 'Neutro →' };
+    const dirIcons = { bullish: '🟢', bearish: '🔴', neutral: '🟡' };
+
+    function renderDetail() {
+      const card = document.getElementById('newsDetailCard');
+      const dateStr = new Date(news.date + 'T00:00:00').toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+      card.innerHTML = `
+        <div class="news-detail-header">
+          <span class="news-detail-category ${news.category}">${news.category.toUpperCase()}</span>
+          <h1>${news.title}</h1>
+          <div class="news-detail-meta">
+            <span class="news-detail-date">📅 ${dateStr}</span>
+            <span class="news-detail-source">📰 ${news.source}</span>
+          </div>
+        </div>
+        <div class="news-detail-body">
+          <p class="news-detail-summary">${news.summary}</p>
+        </div>
+        <div class="news-impact-section">
+          <h2>📊 Análisis de Impacto en Activos</h2>
+          <p class="impact-intro">Cómo esta noticia afecta a los activos listados en MarketPulse:</p>
+          <div class="impact-grid">
+            ${news.impacts.map(imp => `
+              <div class="impact-card ${imp.direction}">
+                <div class="impact-card-header">
+                  <span class="impact-asset">${imp.asset}</span>
+                  <span class="impact-symbol">${imp.symbol}</span>
+                  <span class="impact-direction ${imp.direction}">${dirIcons[imp.direction]} ${dirLabels[imp.direction]}</span>
+                </div>
+                <div class="impact-card-type">${imp.type}</div>
+                <p class="impact-reason">${imp.reason}</p>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        <div class="news-detail-footer">
+          <a href="analysis.html?coin=bitcoin" class="btn btn-primary">Ver Análisis Completo</a>
+          <a href="index.html" class="btn btn-secondary">Volver al Inicio</a>
+        </div>
+      `;
+    }
+
+    renderDetail();
+  </script>
+</body>
+</html>

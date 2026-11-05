@@ -3,10 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MarketPulse — Mi Perfil</title>
+  <title>MarketPulse — Mi Cuenta</title>
   <link rel="stylesheet" href="css/style.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase.js"></script>
@@ -17,168 +15,33 @@
     <nav class="nav-links">
       <a href="index.html">Inicio</a>
       <a href="analysis.html">Análisis</a>
+      <a href="news.html">Noticias</a>
       <a href="pricing.html">Planes</a>
-      <a href="#" id="logoutBtn" class="auth-btn">Cerrar sesión</a>
     </nav>
   </header>
-  <main class="profile-page">
-    <div class="profile-card" id="profileCard">
-      <div class="profile-loading">Cargando perfil…</div>
-    </div>
+  <main class="user-dashboard">
+    <aside class="user-sidebar">
+      <div class="sidebar-profile" id="sidebarProfile">
+        <div class="sidebar-avatar" id="sidebarAvatar">U</div>
+        <div class="sidebar-name" id="sidebarName">Usuario</div>
+        <div class="sidebar-plan" id="sidebarPlan">Free</div>
+      </div>
+      <nav class="sidebar-nav">
+        <button class="sidebar-link active" data-section="dashboard">📊 Dashboard</button>
+        <button class="sidebar-link" data-section="profile">👤 Mi Perfil</button>
+        <button class="sidebar-link" data-section="settings">⚙️ Configuración</button>
+        <button class="sidebar-link" data-section="news">📰 Noticias</button>
+        <button class="sidebar-link" data-section="history">📈 Historial</button>
+        <button class="sidebar-link" data-section="support">💬 Soporte</button>
+        <button class="sidebar-link" data-section="faq">❓ FAQ</button>
+        <button class="sidebar-link" data-section="about">ℹ️ Sobre Nosotros</button>
+        <button class="sidebar-link admin-only" data-section="admin" style="display:none;">🛡️ Admin</button>
+        <div class="sidebar-divider"></div>
+        <button class="sidebar-link danger" id="logoutBtn">🚪 Cerrar Sesión</button>
+      </nav>
+    </aside>
+    <section class="user-content" id="userContent"></section>
   </main>
-  <script>
-    async function loadProfile() {
-      const session = await MarketPulseAuth.getSession();
-      if (!session) {
-        window.location.href = 'login.html';
-        return;
-      }
-      const user = session.user;
-      const profile = await MarketPulseAuth.getUserProfile(user.id).catch(() => null);
-      const subscription = await MarketPulseAuth.getUserSubscription(user.id).catch(() => null);
-
-      const card = document.getElementById('profileCard');
-      card.innerHTML = `
-        <div class="profile-header">
-          <div class="profile-avatar">${(user.user_metadata?.full_name || user.email)[0].toUpperCase()}</div>
-          <div class="profile-info">
-            <h1>${user.user_metadata?.full_name || 'Usuario'}</h1>
-            <p>${user.email}</p>
-          </div>
-          <div class="profile-badge ${subscription ? 'premium' : 'free'}">
-            ${subscription ? '⭐ Premium' : 'Free'}
-          </div>
-        </div>
-        <div class="profile-section">
-          <h2>Suscripción</h2>
-          ${subscription ? `
-            <p>Plan: <strong>${subscription.plans?.name || 'Premium'}</strong></p>
-            <p>Estado: <strong>${subscription.status}</strong></p>
-            <p>Próximo pago: <strong>${new Date(subscription.current_period_end).toLocaleDateString()}</strong></p>
-            <button class="btn btn-secondary" id="cancelSubBtn">Cancelar suscripción</button>
-          ` : `
-            <p>No tienes una suscripción activa.</p>
-            <a href="pricing.html" class="btn btn-primary">Ver planes Premium</a>
-          `}
-        </div>
-        <div class="profile-section">
-          <h2>📅 Calendario de Noticias</h2>
-          <div class="profile-calendar" id="profileCalendar">
-            <div class="calendar-header">
-              <div class="calendar-title" id="calendarTitle">Marzo 2026</div>
-              <div class="calendar-nav">
-                <button id="calPrev">◀</button>
-                <button id="calNext">▶</button>
-              </div>
-            </div>
-            <div class="calendar-grid" id="calendarGrid"></div>
-            <div class="calendar-news-list" id="calendarNewsList"></div>
-          </div>
-        </div>
-
-        <div class="profile-section">
-          <h2>📊 Noticias Relevantes</h2>
-          <div id="profileNewsList"></div>
-        </div>
-
-        <div class="profile-section">
-          <h2>Datos de la cuenta</h2>
-          <p>Miembro desde: <strong>${new Date(user.created_at).toLocaleDateString()}</strong></p>
-          <p>Último acceso: <strong>${new Date(user.last_sign_in_at).toLocaleDateString()}</strong></p>
-        </div>
-      `;
-
-      document.getElementById('logoutBtn').addEventListener('click', async (e) => {
-        e.preventDefault();
-        await MarketPulseAuth.signOut();
-        window.location.href = 'index.html';
-      });
-
-      // ---------- Calendario de Noticias ----------
-      const NEWS_DB = [
-        { id: 'n1', date: '2026-03-11', title: 'CPI de EE.UU. supera expectativas', source: 'Reuters', direction: 'bearish' },
-        { id: 'n2', date: '2026-03-12', title: 'BCE mantiene tipos de interés', source: 'Bloomberg', direction: 'bearish' },
-        { id: 'n3', date: '2026-03-13', title: 'Bitcoin supera los $85,000', source: 'CoinDesk', direction: 'bullish' },
-      ];
-      let calYear = 2026, calMonth = 2;
-
-      function renderCalendar() {
-        const grid = document.getElementById('calendarGrid');
-        const titleEl = document.getElementById('calendarTitle');
-        const listEl = document.getElementById('calendarNewsList');
-        if (!grid || !titleEl) return;
-        const monthNames = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-        titleEl.textContent = `${monthNames[calMonth]} ${calYear}`;
-        const dayNames = ['Lu','Ma','Mi','Ju','Vi','Sá','Do'];
-        let html = dayNames.map(d => `<div class="calendar-day-name">${d}</div>`).join('');
-        const firstDay = new Date(calYear, calMonth, 1);
-        let startDay = firstDay.getDay() - 1;
-        if (startDay < 0) startDay = 6;
-        const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
-        const today = new Date();
-        const isCurrentMonth = today.getFullYear() === calYear && today.getMonth() === calMonth;
-        for (let i = 0; i < startDay; i++) html += '<div class="calendar-day empty"></div>';
-        for (let d = 1; d <= daysInMonth; d++) {
-          const dateStr = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-          const dayNews = NEWS_DB.filter(n => n.date === dateStr);
-          const isToday = isCurrentMonth && d === today.getDate();
-          html += `<div class="calendar-day ${isToday ? 'today' : ''} ${dayNews.length ? 'has-news' : ''}" data-date="${dateStr}">${d}${dayNews.length ? `<div class="news-dot ${dayNews[0].direction}"></div>` : ''}</div>`;
-        }
-        grid.innerHTML = html;
-        grid.querySelectorAll('.calendar-day.has-news').forEach(el => {
-          el.addEventListener('click', () => {
-            const dn = NEWS_DB.filter(n => n.date === el.dataset.date);
-            if (dn.length) window.location.href = `news.html?id=${dn[0].id}`;
-          });
-        });
-        const monthNews = NEWS_DB.filter(n => n.date.startsWith(`${calYear}-${String(calMonth + 1).padStart(2, '0')}`));
-        if (listEl && monthNews.length) {
-          listEl.innerHTML = monthNews.map(n => {
-            const ds = new Date(n.date + 'T00:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
-            return `<a class="calendar-news-item" href="news.html?id=${n.id}"><span class="calendar-news-date">${ds}</span><span class="calendar-news-title">${n.title}</span><span class="calendar-news-arrow">→</span></a>`;
-          }).join('');
-        } else if (listEl) {
-          listEl.innerHTML = '<p style="font-size:0.82rem;color:var(--text-2);text-align:center;padding:12px;">No hay noticias este mes.</p>';
-        }
-      }
-      renderCalendar();
-      document.getElementById('calPrev')?.addEventListener('click', () => { calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar(); });
-      document.getElementById('calNext')?.addEventListener('click', () => { calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } renderCalendar(); });
-
-      // ---------- Noticias Relevantes (Hoy / Semana) ----------
-      const todayStr = new Date().toISOString().split('T')[0];
-      const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString().split('T')[0];
-      const todayNews = NEWS_DB.filter(n => n.date === todayStr);
-      const weekNews = NEWS_DB.filter(n => n.date >= weekAgo && n.date < todayStr);
-      const newsListEl = document.getElementById('profileNewsList');
-      if (newsListEl) {
-        let newsHtml = '';
-        if (todayNews.length) {
-          newsHtml += `<h3 style="font-size:0.85rem;color:var(--accent);margin:12px 0 8px;">🔴 Hoy</h3>`;
-          newsHtml += todayNews.map(n => {
-            const ds = new Date(n.date + 'T00:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
-            return `<a class="calendar-news-item" href="news.html?id=${n.id}"><span class="calendar-news-date">${ds}</span><span class="calendar-news-title">${n.title}</span><span class="calendar-news-arrow">→</span></a>`;
-          }).join('');
-        }
-        if (weekNews.length) {
-          newsHtml += `<h3 style="font-size:0.85rem;color:var(--neutral);margin:12px 0 8px;">🟡 Esta semana</h3>`;
-          newsHtml += weekNews.map(n => {
-            const ds = new Date(n.date + 'T00:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
-            return `<a class="calendar-news-item" href="news.html?id=${n.id}"><span class="calendar-news-date">${ds}</span><span class="calendar-news-title">${n.title}</span><span class="calendar-news-arrow">→</span></a>`;
-          }).join('');
-        }
-        if (!newsHtml) newsHtml = '<p style="font-size:0.82rem;color:var(--text-2);padding:12px;">No hay noticias relevantes hoy o esta semana.</p>';
-        newsListEl.innerHTML = newsHtml;
-      }
-
-      const cancelBtn = document.getElementById('cancelSubBtn');
-      if (cancelBtn) {
-        cancelBtn.addEventListener('click', () => {
-          alert('Para cancelar, contacta soporte. Próximamente disponible desde aquí.');
-        });
-      }
-    }
-    loadProfile();
-  </script>
+  <script src="js/dashboard.js"></script>
 </body>
 </html>

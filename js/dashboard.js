@@ -77,21 +77,28 @@
         const tipsEl=document.getElementById('tipsEngine');
         if(tipsEl){
           const tip=getTradingTip();
+          const quote=getTradingQuote();
           const colors={critical:'var(--down)',warning:'var(--neutral)',info:'var(--accent)'};
           tipsEl.innerHTML=`<div class="tips-engine">
             <div class="tips-header"><span class="tips-icon">💡</span><span class="tips-title">Tip del Día</span><span class="tips-category" style="color:${colors[tip.level]}">${tip.category}</span></div>
             <div class="tips-body"><span class="tips-emoji">${tip.icon}</span><p class="tips-text">${tip.tip}</p></div>
+            <div class="tips-quote"><div class="tips-quote-icon">💬</div><div class="tips-quote-content"><p class="tips-quote-text">"${quote.quote}"</p><div class="tips-quote-author">— <strong>${quote.author}</strong> · ${quote.role}</div></div></div>
             <div class="tips-footer"><button class="tips-next" id="nextTipBtn">🔄 Siguiente tip</button><span class="tips-counter">${TRADING_TIPS.indexOf(tip)+1} / ${TRADING_TIPS.length}</span></div>
           </div>`;
           let tipIdx=TRADING_TIPS.indexOf(tip);
+          let quoteIdx=TRADING_QUOTES.indexOf(quote);
           document.getElementById('nextTipBtn')?.addEventListener('click',()=>{
             tipIdx=(tipIdx+1)%TRADING_TIPS.length;
+            quoteIdx=(quoteIdx+1)%TRADING_QUOTES.length;
             const t2=TRADING_TIPS[tipIdx];
+            const q2=TRADING_QUOTES[quoteIdx];
             const el=tipsEl.querySelector('.tips-engine');
             el.querySelector('.tips-emoji').textContent=t2.icon;
             el.querySelector('.tips-text').textContent=t2.tip;
             el.querySelector('.tips-category').textContent=t2.category;
             el.querySelector('.tips-category').style.color=colors[t2.level];
+            el.querySelector('.tips-quote-text').textContent=`"${q2.quote}"`;
+            el.querySelector('.tips-quote-author').innerHTML=`— <strong>${q2.author}</strong> · ${q2.role}`;
             el.querySelector('.tips-counter').textContent=`${tipIdx+1} / ${TRADING_TIPS.length}`;
           });
         }

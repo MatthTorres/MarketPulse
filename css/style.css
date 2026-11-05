@@ -1219,6 +1219,11 @@ h1, h2 { font-family: 'Sora', sans-serif; }
 .tips-next { background: rgba(242,169,0,0.15); border: 1px solid rgba(242,169,0,0.3); color: var(--accent); padding: 8px 16px; border-radius: 8px; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all 0.2s; font-family: inherit; }
 .tips-next:hover { background: rgba(242,169,0,0.25); }
 .tips-counter { font-size: 0.72rem; color: var(--text-2); }
+.tips-quote { display: flex; gap: 12px; margin-top: 16px; padding: 14px; background: rgba(255,255,255,0.04); border-radius: 10px; border-left: 3px solid var(--accent); }
+.tips-quote-icon { font-size: 1.3rem; }
+.tips-quote-content { flex: 1; }
+.tips-quote-text { font-size: 0.88rem; font-style: italic; color: var(--text-1); line-height: 1.5; margin-bottom: 6px; }
+.tips-quote-author { font-size: 0.75rem; color: var(--text-2); }
 .profile-edit-card { display: flex; gap: 30px; background: var(--surface); border: 1px solid var(--surface-border); border-radius: 14px; padding: 28px; }
 .profile-photo-section { display: flex; flex-direction: column; align-items: center; gap: 12px; }
 .profile-photo-large { width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, #f2a900, #ff8c00); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: 800; color: #0b0f17; background-size: cover; background-position: center; }

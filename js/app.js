@@ -38,6 +38,31 @@ const TRADING_TIPS = [
   { id: 18, icon: '📉', category: 'Stop-Loss', tip: 'Mueve tu stop-loss a break-even después de que el precio avance a tu favor. Así mínimo no pierdes.', level: 'info' },
 ];
 
+// ---------- Frases célebres de la industria ----------
+const TRADING_QUOTES = [
+  { author: 'Warren Buffett', quote: 'Sé temeroso cuando otros son codiciosos, y codicioso cuando otros son temerosos.', role: 'Inversor legendario' },
+  { author: 'George Soros', quote: 'Lo importante no es tener razón o equivocarse, sino cuánto ganas cuando tienes razón y cuánto pierdes cuando te equivocas.', role: 'Especulador' },
+  { author: 'Jesse Livermore', quote: 'El dinero se gana esperando, no operando.', role: 'Trader histórico' },
+  { author: 'Paul Tudor Jones', quote: 'La regla más importante del trading es jugar gran defensa, no gran ofensiva.', role: 'Hedge Fund Manager' },
+  { author: 'Mark Douglas', quote: 'Cada operación es única y estadísticamente independiente de la anterior.', role: 'Autor de Trading Psychology' },
+  { author: 'Alexander Elder', quote: 'El buen trading es un proceso, no un evento.', role: 'Autor de Trading for a Living' },
+  { author: 'Benjamin Graham', quote: 'El mercado a corto plazo es una máquina de votar, a largo plazo es una máquina de pesar.', role: 'Padre del value investing' },
+  { author: 'Ray Dalio', quote: 'La diversificación es el santo grial de la inversión.', role: 'Fundador de Bridgewater' },
+  { author: 'Peter Lynch', quote: 'Si pasas 13 minutos analizando la economía y el mercado, has desperdiciado 10 minutos.', role: 'Famoso gestor de fondos' },
+  { author: 'Mark Minervini', quote: 'El riesgo no es la volatilidad, es no saber lo que estás haciendo.', role: 'Campeón de trading' },
+  { author: 'Sun Tzu', quote: 'La victoria se decide antes de la batalla.', role: 'Estrategia aplicada al trading' },
+  { author: 'Ed Seykota', quote: 'Todo lo que sabemos en el presente es una proyección de nuestra experiencia pasada.', role: 'Trader de tendencias' },
+  { author: 'Paul Tudor Jones', quote: 'Nunca promedíes a la baja. Nunca.', role: 'Hedge Fund Manager' },
+  { author: 'Warren Buffett', quote: 'La primera regla es no perder dinero. La segunda regla es no olvidar la primera.', role: 'Inversor legendario' },
+  { author: 'George Soros', quote: 'Los mercados están constantemente en un estado de incertidumbre, y el dinero se gana apostando a lo inesperado.', role: 'Especulador' },
+];
+
+function getTradingQuote() {
+  const now = new Date();
+  const dayOfYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000);
+  return TRADING_QUOTES[dayOfYear % TRADING_QUOTES.length];
+}
+
 function getTradingTip() {
   const now = new Date();
   const dayOfYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000);
@@ -58,6 +83,7 @@ function renderTipsEngine(containerId) {
   const container = document.getElementById(containerId);
   if (!container) return;
   const tip = getTradingTip();
+  const quote = getTradingQuote();
   const levelColors = { critical: 'var(--down)', warning: 'var(--neutral)', info: 'var(--accent)' };
   container.innerHTML = `
     <div class="tips-engine">
@@ -69,6 +95,13 @@ function renderTipsEngine(containerId) {
       <div class="tips-body">
         <span class="tips-emoji">${tip.icon}</span>
         <p class="tips-text">${tip.tip}</p>
+      </div>
+      <div class="tips-quote">
+        <div class="tips-quote-icon">💬</div>
+        <div class="tips-quote-content">
+          <p class="tips-quote-text">"${quote.quote}"</p>
+          <div class="tips-quote-author">— <strong>${quote.author}</strong> · ${quote.role}</div>
+        </div>
       </div>
       <div class="tips-footer">
         <button class="tips-next" onclick="renderTipsEngine('${containerId}')">🔄 Siguiente tip</button>

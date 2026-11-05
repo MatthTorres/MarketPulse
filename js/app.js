@@ -1650,7 +1650,7 @@ function renderNews(items) {
           <span class="news-source">${item.source}</span>
         </div>
         <p class="news-title">${item.title}</p>
-        <a class="news-link" href="${item.url}" target="_blank" rel="noopener noreferrer">${t('newsReadMore')} →</a>
+        <a class="news-link" href="news.html">${t('newsReadMore')} →</a>
       `;
       groupEl.appendChild(card);
     });

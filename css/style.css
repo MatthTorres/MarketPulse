@@ -1074,6 +1074,30 @@ h1, h2 { font-family: 'Sora', sans-serif; }
 .password-strength.weak { color: var(--down); }
 .password-strength.medium { color: var(--neutral); }
 .password-strength.strong { color: var(--up); }
+/* ---------- News Hub Page ---------- */
+.news-hub-page { max-width: 1100px; margin: 0 auto; padding: 30px 20px; }
+.news-hub-hero { text-align: center; margin-bottom: 36px; }
+.news-hub-hero h1 { font-size: 2rem; font-weight: 800; color: var(--text-0); margin-bottom: 8px; }
+.news-hub-hero p { font-size: 0.95rem; color: var(--text-2); }
+.news-hub-section { margin-bottom: 32px; }
+.news-hub-section-title { font-size: 1.15rem; font-weight: 700; color: var(--text-0); margin-bottom: 14px; }
+.news-hub-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+.news-hub-card { background: var(--surface); border: 1px solid var(--surface-border); border-radius: 14px; padding: 18px; cursor: pointer; transition: all 0.2s; }
+.news-hub-card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+.news-hub-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.news-hub-card-date { font-size: 0.72rem; color: var(--text-2); font-weight: 600; }
+.news-hub-card-category { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; padding: 2px 8px; border-radius: 5px; }
+.news-hub-card-category.macro { background: rgba(242,169,0,0.2); color: var(--accent); }
+.news-hub-card-category.crypto { background: rgba(33,217,127,0.2); color: var(--up); }
+.news-hub-card-category.forex { background: rgba(100,150,255,0.2); color: #6496ff; }
+.news-hub-card-title { font-size: 0.95rem; font-weight: 700; color: var(--text-0); margin-bottom: 6px; line-height: 1.3; }
+.news-hub-card-summary { font-size: 0.82rem; color: var(--text-1); line-height: 1.5; margin-bottom: 10px; }
+.news-hub-card-impacts { display: flex; gap: 6px; flex-wrap: wrap; }
+.news-hub-impact-tag { font-size: 0.7rem; font-weight: 700; padding: 3px 8px; border-radius: 6px; background: var(--bg); border: 1px solid var(--surface-border); }
+.news-hub-impact-tag.bullish { color: var(--up); border-color: rgba(33,217,127,0.3); }
+.news-hub-impact-tag.bearish { color: var(--down); border-color: rgba(255,93,108,0.3); }
+.news-hub-impact-tag.neutral { color: var(--neutral); border-color: rgba(242,169,0,0.3); }
+.news-hub-empty { font-size: 0.82rem; color: var(--text-2); text-align: center; padding: 20px; grid-column: 1 / -1; }
 /* ---------- News Detail Page ---------- */
 .news-detail-page { max-width: 900px; margin: 0 auto; padding: 30px 20px; }
 .news-detail-container { display: flex; flex-direction: column; gap: 20px; }

@@ -62,6 +62,25 @@
   </div>
 </div>
       <button class="theme-btn" id="themeToggle" type="button" aria-label="Cambiar tema">🌙</button>
+    <div class="user-menu" id="userMenu">
+      <div class="user-avatar" id="userAvatar"></div>
+      <div class="user-info">
+        <span class="user-name" id="userName">Usuario</span>
+        <span class="user-plan" id="userPlan">Free</span>
+      </div>
+      <div class="user-dropdown" id="userDropdown">
+        <div class="dropdown-header">
+          <div class="dh-name" id="dhName">Usuario</div>
+          <div class="dh-email" id="dhEmail">email@example.com</div>
+          <span class="dh-plan" id="dhPlan">Free</span>
+        </div>
+        <a href="profile.html" class="dropdown-item">👤 Mi perfil</a>
+        <a href="pricing.html" class="dropdown-item">⭐ Planes</a>
+        <div class="dropdown-divider"></div>
+        <button class="dropdown-item danger" id="logoutBtn">🚪 Cerrar sesión</button>
+      </div>
+    </div>
+    <a href="login.html" class="btn btn-primary auth-btn" style="padding:8px 16px;font-size:0.85rem;">Iniciar sesión</a>
     </div>
   </header>
 
@@ -230,6 +249,85 @@
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').catch(err => console.warn('SW registration failed:', err));
     }
+  </script>
+
+  <script>
+    // ---------- User Menu Dropdown ----------
+    async function initUserMenu() {
+      const userMenu = document.getElementById('userMenu');
+      const loginBtn = document.querySelector('.auth-btn[href="login.html"]');
+      const userAvatar = document.getElementById('userAvatar');
+      const userName = document.getElementById('userName');
+      const userPlan = document.getElementById('userPlan');
+      const dhName = document.getElementById('dhName');
+      const dhEmail = document.getElementById('dhEmail');
+      const dhPlan = document.getElementById('dhPlan');
+      const userDropdown = document.getElementById('userDropdown');
+      const logoutBtn = document.getElementById('logoutBtn');
+
+      if (!userMenu || !loginBtn) return;
+
+      const session = await MarketPulseAuth.getSession();
+
+      if (session) {
+        // User is logged in
+        loginBtn.style.display = 'none';
+        userMenu.classList.add('active');
+
+        const profile = await MarketPulseAuth.getUserProfile(session.user.id).catch(() => null);
+        const subscription = await MarketPulseAuth.getUserSubscription(session.user.id).catch(() => null);
+
+        const name = profile?.full_name || session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'Usuario';
+        const email = session.user.email || '';
+        const plan = subscription?.plans?.name || 'Free';
+        const isPremium = plan === 'Premium';
+
+        // Set initials
+        const initial = name.charAt(0).toUpperCase();
+        userAvatar.textContent = initial;
+
+        // Update all text elements
+        userName.textContent = name;
+        userPlan.textContent = isPremium ? 'Premium' : 'Free';
+        userPlan.className = isPremium ? 'user-plan premium' : 'user-plan';
+        dhName.textContent = name;
+        dhEmail.textContent = email;
+        dhPlan.textContent = isPremium ? 'Premium' : 'Free';
+        dhPlan.className = isPremium ? 'dh-plan premium' : 'dh-plan';
+
+        // Handle avatar click (could upload photo later)
+        userAvatar.style.cursor = 'pointer';
+
+        // Logout
+        logoutBtn.addEventListener('click', async (e) => {
+          e.preventDefault();
+          await MarketPulseAuth.signOut();
+          window.location.href = 'index.html';
+        });
+      } else {
+        // User not logged in
+        userMenu.style.display = 'none';
+        loginBtn.style.display = 'inline-flex';
+      }
+
+      // Toggle dropdown on click
+      userMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userDropdown.classList.toggle('open');
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', () => {
+        userDropdown.classList.remove('open');
+      });
+
+      // Prevent dropdown from closing when clicking inside it
+      userDropdown.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+    }
+
+    initUserMenu();
   </script>
 </body>
 </html>

@@ -620,7 +620,7 @@ function macd(values) {
 //  - Fallback Binance (sin API key) para historial y precio spot.
 //  - Tope 8 s por petición: el AbortController de fetchJSON evita que un
 //    proveedor colgado deje la página en "Cargando..." (timeout del navegador).
-const FETCH_TIMEOUT_MS = 8000;
+const FETCH_TIMEOUT_MS = 5000;
 let fetchGate = Promise.resolve();
 function gatedFetch(url, options) {
   const run = fetchGate.then(async () => {
@@ -1140,7 +1140,7 @@ function scheduleTradingView() {
       if (entries.some(e => e.isIntersecting)) { io.disconnect(); start(); }
     }, { rootMargin: '300px' });
     io.observe(container);
-    tvSafetyTimer = setTimeout(start, 4000);   // por si el observer no llegara a dispararse
+    tvSafetyTimer = setTimeout(start, 8000);   // por si el observer no llegara a dispararse
   }
 }
 

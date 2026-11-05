@@ -27,6 +27,24 @@
       <form id="authForm" class="auth-form">
         <div class="form-group" id="nameGroup" style="display:none;">
           <label for="fullName">Nombre completo</label>
+          <input type="text" id="fullName" placeholder="Tu nombre" />
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="tu@email.com" required />
+        </div>
+        <div class="form-group">
+          <label for="password">Contraseña</label>
+          <input type="password" id="password" placeholder="••••••••" required minlength="6" />
+        </div>
+        <button type="submit" class="btn btn-primary auth-submit" id="authSubmit">Iniciar sesión</button>
+      </form>
+      <div class="auth-divider"><span>o continúa con</span></div>
+      <button class="btn btn-google" id="googleBtn">Continuar con Google</button>
+      <p class="auth-footer"><a href="index.html">← Volver al inicio</a></p>
+      <div id="authMessage" class="auth-message"></div>
+    </div>
+  </main>
   <script>
     let authMode = 'login';
     const tabLogin = document.getElementById('tabLogin');
@@ -104,21 +122,3 @@
   </script>
 </body>
 </html>
-          <input type="text" id="fullName" placeholder="Tu nombre" />
-        </div>
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input type="email" id="email" placeholder="tu@email.com" required />
-        </div>
-        <div class="form-group">
-          <label for="password">Contraseña</label>
-          <input type="password" id="password" placeholder="••••••••" required minlength="6" />
-        </div>
-        <button type="submit" class="btn btn-primary auth-submit" id="authSubmit">Iniciar sesión</button>
-      </form>
-      <div class="auth-divider"><span>o continúa con</span></div>
-      <button class="btn btn-google" id="googleBtn">Continuar con Google</button>
-      <p class="auth-footer"><a href="index.html">← Volver al inicio</a></p>
-      <div id="authMessage" class="auth-message"></div>
-    </div>
-  </main>

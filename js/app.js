@@ -1367,7 +1367,27 @@ function buildSummary(fundamental, technical, trendUp = true) {
     els.recoDetails.appendChild(li);
   });
 
-// Drivers adicionales de explicabilidad\n  if (els.recoDrivers) {\n    els.recoDrivers.innerHTML = '';\n    const drivers = [];\n    if (fundamental.upProb >= 60) drivers.push(t('detFundUp'));\n    else if (fundamental.upProb <= 40) drivers.push(t('detFundDown'));\n    else drivers.push(t('detFundNeutral'));\n    if (technical.rsi !== null) {\n      if (technical.rsi < 30) drivers.push(t('detRSIOverbought').replace('{rsi}', technical.rsi.toFixed(1)));\n      else if (technical.rsi > 70) drivers.push(t('detRSIOversold').replace('{rsi}', technical.rsi.toFixed(1)));\n      else drivers.push(t('detRSINeutral').replace('{rsi}', technical.rsi.toFixed(1)));\n    }\n    if (technical.macd !== undefined) drivers.push(t('detMACD').replace('{macdSign}', technical.macd.toFixed(2)));\n    drivers.push(trendUp ? t('detTrendUp') : t('detTrendDown'));\n    drivers.slice(0, 3).forEach(d => {\n      const li = document.createElement('li');\n      li.textContent = d;\n      els.recoDrivers.appendChild(li);\n    });\n  }
+  // Drivers adicionales de explicabilidad
+  const recoDriversEl = document.getElementById('recoDrivers');
+  if (recoDriversEl) {
+    recoDriversEl.innerHTML = '';
+    const drivers = [];
+    if (fundamental.upProb >= 60) drivers.push(t('detFundUp'));
+    else if (fundamental.upProb <= 40) drivers.push(t('detFundDown'));
+    else drivers.push(t('detFundNeutral'));
+    if (technical.rsi !== null) {
+      if (technical.rsi < 30) drivers.push(t('detRSIOverbought').replace('{rsi}', technical.rsi.toFixed(1)));
+      else if (technical.rsi > 70) drivers.push(t('detRSIOversold').replace('{rsi}', technical.rsi.toFixed(1)));
+      else drivers.push(t('detRSINeutral').replace('{rsi}', technical.rsi.toFixed(1)));
+    }
+    if (technical.macd !== undefined) drivers.push(t('detMACD').replace('{macdSign}', technical.macd.toFixed(2)));
+    drivers.push(trendUp ? t('detTrendUp') : t('detTrendDown'));
+    drivers.slice(0, 3).forEach(d => {
+      const li = document.createElement('li');
+      li.textContent = d;
+      recoDriversEl.appendChild(li);
+    });
+  }
   renderRangeBlock(combinedUp, 100 - combinedUp);
 }
 
@@ -1499,7 +1519,10 @@ async function fetchNews() {
 
   let newsItems = [];
   try {
-    const res = await fetch(apiUrl, { signal: AbortSignal.timeout(8000) });
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 8000);
+    const res = await fetch(apiUrl, { signal: ctrl.signal });
+    clearTimeout(timer);
     if (res.ok) {
       const data = await res.json();
       if (data.status === 'ok' && Array.isArray(data.items)) {

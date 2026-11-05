@@ -36,8 +36,8 @@
 <link rel="stylesheet" href="css/style.css?v=11">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#f2a900">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-  <script src="js/supabase.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
 </head>
 <body data-page="analysis">
   <div class="bg-glow"></div>
@@ -274,7 +274,7 @@
     // ---------- User Menu Dropdown ----------
     async function initUserMenu() {
       const userMenu = document.getElementById('userMenu');
-      const loginBtn = document.querySelector('.auth-btn[href="login.html"]');
+      const authBtns = document.querySelectorAll('.auth-btn');
       const userAvatar = document.getElementById('userAvatar');
       const userName = document.getElementById('userName');
       const userPlan = document.getElementById('userPlan');
@@ -284,12 +284,12 @@
       const userDropdown = document.getElementById('userDropdown');
       const logoutBtn = document.getElementById('logoutBtn');
 
-      if (!userMenu || !loginBtn) return;
+      if (!userMenu || authBtns.length === 0) return;
 
       const session = await MarketPulseAuth.getSession();
 
       if (session) {
-        loginBtn.style.display = 'none';
+        authBtns.forEach(btn => btn.style.display = 'none');
         userMenu.classList.add('active');
 
         const profile = await MarketPulseAuth.getUserProfile(session.user.id).catch(() => null);
@@ -320,7 +320,7 @@
         });
       } else {
         userMenu.style.display = 'none';
-        loginBtn.style.display = 'inline-flex';
+        authBtns.forEach(btn => btn.style.display = 'inline-flex');
       }
 
       userMenu.addEventListener('click', (e) => {

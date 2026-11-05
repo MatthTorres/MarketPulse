@@ -1031,12 +1031,13 @@ h1, h2 { font-family: 'Sora', sans-serif; }
 }
 
 /* ---------- Botones genéricos ---------- */
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 24px; border: none; border-radius: 10px; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; font-family: inherit; text-decoration: none; }
-.btn-primary { background: var(--accent); color: #000; }
-.btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
-.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-.btn-secondary { background: var(--surface); color: var(--text-0); border: 1px solid var(--surface-border); }
-.btn-secondary:hover { border-color: var(--accent); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 28px; border: none; border-radius: 12px; font-weight: 800; font-size: 1rem; cursor: pointer; transition: all 0.25s; font-family: inherit; text-decoration: none; letter-spacing: 0.3px; }
+.btn-primary { background: linear-gradient(135deg, #f2a900 0%, #ff8c00 100%); color: #0b0f17; box-shadow: 0 4px 16px rgba(242,169,0,0.35); }
+.btn-primary:hover { filter: brightness(1.15); transform: translateY(-2px); box-shadow: 0 6px 24px rgba(242,169,0,0.5); }
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn-secondary { background: var(--surface); color: var(--text-0); border: 1px solid var(--surface-border); padding: 12px 24px; }
+.btn-secondary:hover { border-color: var(--accent); transform: translateY(-1px); }
+.auth-submit { width: 100%; margin-top: 12px; padding: 16px 28px; font-size: 1.05rem; }
 /* ---------- Auth Pages ---------- */
 .auth-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; background: var(--bg); }
 .auth-card { background: var(--surface); border: 1px solid var(--surface-border); border-radius: 20px; padding: 40px 36px; width: 100%; max-width: 420px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }

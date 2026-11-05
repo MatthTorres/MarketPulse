@@ -5,6 +5,7 @@
 
   const sections={
     dashboard:()=>{const h=JSON.parse(localStorage.getItem('mp_history')||'[]');return`<h1>Dashboard</h1>
+      <div id="tipsEngine"></div>
       <div class="dash-cards">
         <div class="dash-card"><div class="dash-card-icon">⭐</div><div class="dash-card-info"><div class="dash-card-label">Plan</div><div class="dash-card-value">${userSub?.plans?.name||'Free'}</div></div></div>
         <div class="dash-card"><div class="dash-card-icon">📅</div><div class="dash-card-info"><div class="dash-card-label">Miembro desde</div><div class="dash-card-value">${new Date(currentUser.created_at).toLocaleDateString('es-ES')}</div></div></div>
@@ -70,7 +71,32 @@
     }
     if(name==='support'){document.getElementById('supportSendBtn')?.addEventListener('click',()=>{const m=document.getElementById('supportMsg');m.textContent='Mensaje enviado. Te responderemos pronto.';m.className='auth-message success';});}
     if(name==='admin')loadAdminData();
-    if(name==='news'||name==='dashboard')loadNews(name);
+    if(name==='news'||name==='dashboard'){
+      loadNews(name);
+      if(name==='dashboard'){
+        const tipsEl=document.getElementById('tipsEngine');
+        if(tipsEl){
+          const tip=getTradingTip();
+          const colors={critical:'var(--down)',warning:'var(--neutral)',info:'var(--accent)'};
+          tipsEl.innerHTML=`<div class="tips-engine">
+            <div class="tips-header"><span class="tips-icon">💡</span><span class="tips-title">Tip del Día</span><span class="tips-category" style="color:${colors[tip.level]}">${tip.category}</span></div>
+            <div class="tips-body"><span class="tips-emoji">${tip.icon}</span><p class="tips-text">${tip.tip}</p></div>
+            <div class="tips-footer"><button class="tips-next" id="nextTipBtn">🔄 Siguiente tip</button><span class="tips-counter">${TRADING_TIPS.indexOf(tip)+1} / ${TRADING_TIPS.length}</span></div>
+          </div>`;
+          let tipIdx=TRADING_TIPS.indexOf(tip);
+          document.getElementById('nextTipBtn')?.addEventListener('click',()=>{
+            tipIdx=(tipIdx+1)%TRADING_TIPS.length;
+            const t2=TRADING_TIPS[tipIdx];
+            const el=tipsEl.querySelector('.tips-engine');
+            el.querySelector('.tips-emoji').textContent=t2.icon;
+            el.querySelector('.tips-text').textContent=t2.tip;
+            el.querySelector('.tips-category').textContent=t2.category;
+            el.querySelector('.tips-category').style.color=colors[t2.level];
+            el.querySelector('.tips-counter').textContent=`${tipIdx+1} / ${TRADING_TIPS.length}`;
+          });
+        }
+      }
+    }
   }
 
   function loadNews(name){

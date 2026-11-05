@@ -1205,6 +1205,20 @@ h1, h2 { font-family: 'Sora', sans-serif; }
 .dash-card-icon { font-size: 1.8rem; }
 .dash-card-label { font-size: 0.72rem; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.5px; }
 .dash-card-value { font-size: 1.15rem; font-weight: 800; color: var(--text-0); }
+
+/* ---------- Tips Engine ---------- */
+.tips-engine { background: linear-gradient(135deg, rgba(242,169,0,0.1), rgba(255,140,0,0.05)); border: 1px solid rgba(242,169,0,0.25); border-radius: 16px; padding: 20px; margin-bottom: 24px; }
+.tips-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.tips-icon { font-size: 1.3rem; }
+.tips-title { font-size: 0.95rem; font-weight: 800; color: var(--text-0); }
+.tips-category { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-left: auto; }
+.tips-body { display: flex; gap: 14px; align-items: flex-start; }
+.tips-emoji { font-size: 2rem; }
+.tips-text { font-size: 0.92rem; line-height: 1.6; color: var(--text-1); flex: 1; }
+.tips-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; }
+.tips-next { background: rgba(242,169,0,0.15); border: 1px solid rgba(242,169,0,0.3); color: var(--accent); padding: 8px 16px; border-radius: 8px; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+.tips-next:hover { background: rgba(242,169,0,0.25); }
+.tips-counter { font-size: 0.72rem; color: var(--text-2); }
 .profile-edit-card { display: flex; gap: 30px; background: var(--surface); border: 1px solid var(--surface-border); border-radius: 14px; padding: 28px; }
 .profile-photo-section { display: flex; flex-direction: column; align-items: center; gap: 12px; }
 .profile-photo-large { width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, #f2a900, #ff8c00); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: 800; color: #0b0f17; background-size: cover; background-position: center; }

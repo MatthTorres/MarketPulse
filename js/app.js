@@ -16,7 +16,66 @@ const COINS = {
   dogecoin: { id: 'dogecoin', tv: 'BINANCE:DOGEUSDT', name: 'Dogecoin', symbol: 'DOGE' },
 };
 
-// ---------- Datos de noticias con análisis de impacto por activo ----------
+// ---------- Motor de Tips de Trading ----------
+const TRADING_TIPS = [
+  { id: 1, icon: '⚠️', category: 'Riesgo', tip: 'Nunca arriesgues más del 2% de tu cuenta en una sola operación. Si tu cuenta es $1,000, tu stop-loss máximo es $20.', level: 'warning' },
+  { id: 2, icon: '🛡️', category: 'Protección', tip: 'Siempre usa stop-loss. Sin él, una sola operación mala puede borrar semanas de ganancias.', level: 'critical' },
+  { id: 3, icon: '📊', category: 'Análisis', tip: 'No operes contra la tendencia principal. Si el precio está por debajo de la EMA 200, la tendencia es bajista.', level: 'info' },
+  { id: 4, icon: '🧠', category: 'Psicología', tip: 'No persigas el precio. Si te perdiste la entrada, espera el próximo setup. FOMO = pérdidas.', level: 'warning' },
+  { id: 5, icon: '💰', category: 'Gestión', tip: 'Retira ganancias regularmente. Dejar todo en la cuenta invita a la sobreoperación.', level: 'info' },
+  { id: 6, icon: '⏰', category: 'Tiempo', tip: 'No operes durante los primeros 15 minutos después de la apertura del mercado. La volatilidad es extrema.', level: 'warning' },
+  { id: 7, icon: '📋', category: 'Plan', tip: 'Tener un plan de trading ANTES de entrar. Define entrada, stop-loss y take-profit. Si no lo tienes, no entres.', level: 'critical' },
+  { id: 8, icon: '🔄', category: 'Sobreoperación', tip: 'Si llevas 3 pérdidas seguidas, PARA. El revenge trading es la forma más rápida de quemar una cuenta.', level: 'critical' },
+  { id: 9, icon: '📱', category: 'Noticias', tip: 'No operes 30 minutos antes de noticias de alto impacto (CPI, NFP, FOMC). El spread se amplía y el stop puede saltar.', level: 'warning' },
+  { id: 10, icon: '🎯', category: 'Expectativas', tip: 'Una operación ganadora no te hace rico. La consistencia lo hace. Busca 55-60% de acierto, no 100%.', level: 'info' },
+  { id: 11, icon: '⚖️', category: 'Riesgo/Beneficio', tip: 'Busca operaciones con riesgo/beneficio mínimo 1:2. Si arriesgas $50, busca ganar al menos $100.', level: 'info' },
+  { id: 12, icon: '🚫', category: 'Apalancamiento', tip: 'El apalancamiento alto es un arma de doble filo. Un x20 puede multiplicar ganancias pero también destruir tu cuenta en minutos.', level: 'critical' },
+  { id: 13, icon: '📝', category: 'Registro', tip: 'Lleva un diario de trading. Anota por qué entraste, qué sentiste y qué salió mal. Es la mejor forma de mejorar.', level: 'info' },
+  { id: 14, icon: '🌙', category: 'Descanso', tip: 'El mercado de cripto opera 24/7, pero tú no. Descansar evita decisiones impulsivas por fatiga.', level: 'warning' },
+  { id: 15, icon: '🔍', category: 'Confirmación', tip: 'Confirma con múltiples indicadores. RSI + MACD + Volumen juntos son más fiables que uno solo.', level: 'info' },
+  { id: 16, icon: '💡', category: 'Diversificación', tip: 'No pongas todo en un solo activo. Diversifica entre cripto, metales y divisas para reducir riesgo.', level: 'info' },
+  { id: 17, icon: '🚨', category: 'Emociones', tip: 'Si sientes euforia después de una ganancia grande, NO operes más ese día. La euforia lleva al exceso de confianza.', level: 'critical' },
+  { id: 18, icon: '📉', category: 'Stop-Loss', tip: 'Mueve tu stop-loss a break-even después de que el precio avance a tu favor. Así mínimo no pierdes.', level: 'info' },
+];
+
+function getTradingTip() {
+  const now = new Date();
+  const dayOfYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000);
+  return TRADING_TIPS[dayOfYear % TRADING_TIPS.length];
+}
+
+function getDailyTips(count = 3) {
+  const now = new Date();
+  const dayOfYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000);
+  const tips = [];
+  for (let i = 0; i < count; i++) {
+    tips.push(TRADING_TIPS[(dayOfYear + i) % TRADING_TIPS.length]);
+  }
+  return tips;
+}
+
+function renderTipsEngine(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const tip = getTradingTip();
+  const levelColors = { critical: 'var(--down)', warning: 'var(--neutral)', info: 'var(--accent)' };
+  container.innerHTML = `
+    <div class="tips-engine">
+      <div class="tips-header">
+        <span class="tips-icon">💡</span>
+        <span class="tips-title">Tip del Día</span>
+        <span class="tips-category" style="color:${levelColors[tip.level]}">${tip.category}</span>
+      </div>
+      <div class="tips-body">
+        <span class="tips-emoji">${tip.icon}</span>
+        <p class="tips-text">${tip.tip}</p>
+      </div>
+      <div class="tips-footer">
+        <button class="tips-next" onclick="renderTipsEngine('${containerId}')">🔄 Siguiente tip</button>
+        <span class="tips-counter">${TRADING_TIPS.indexOf(tip) + 1} / ${TRADING_TIPS.length}</span>
+      </div>
+    </div>`;
+}
 const NEWS_DATABASE = [
   {
     id: 'n1', date: '2026-03-11', title: 'CPI de EE.UU. supera expectativas: inflación sube al 3.2%', source: 'Reuters', url: '#', category: 'macro',
@@ -1459,6 +1518,9 @@ function renderAnalysis() {
 
   // Macro Calendario (eventos estáticos)
   renderMacroCalendar();
+
+  // Motor de Tips de Trading
+  renderTipsEngine('tipsEngine');
 
   // Noticias del mes (congruente con calendario)
   fetchNews();

@@ -1038,6 +1038,15 @@ h1, h2 { font-family: 'Sora', sans-serif; }
 .btn-secondary { background: var(--surface); color: var(--text-0); border: 1px solid var(--surface-border); padding: 12px 24px; }
 .btn-secondary:hover { border-color: var(--accent); transform: translateY(-1px); }
 .auth-submit { width: 100%; margin-top: 12px; padding: 16px 28px; font-size: 1.05rem; }
+/* ---------- Password toggle & strength ---------- */
+.password-wrapper { position: relative; }
+.password-wrapper input { padding-right: 48px; }
+.password-toggle { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-2); cursor: pointer; padding: 4px; border-radius: 6px; transition: color 0.2s; display: flex; align-items: center; }
+.password-toggle:hover { color: var(--accent); }
+.password-strength { font-size: 0.72rem; font-weight: 600; margin-top: 4px; min-height: 16px; }
+.password-strength.weak { color: var(--down); }
+.password-strength.medium { color: var(--neutral); }
+.password-strength.strong { color: var(--up); }
 /* ---------- Auth Pages ---------- */
 .auth-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; background: var(--bg); }
 .auth-card { background: var(--surface); border: 1px solid var(--surface-border); border-radius: 20px; padding: 40px 36px; width: 100%; max-width: 420px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }

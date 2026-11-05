@@ -108,11 +108,17 @@
     });
 
     document.getElementById('googleBtn').addEventListener('click', async () => {
+      const btn = document.getElementById('googleBtn');
+      btn.disabled = true;
+      btn.textContent = 'Redirigiendo…';
       try {
         await MarketPulseAuth.signInWithGoogle();
       } catch (err) {
-        authMessage.textContent = err.message || 'Error con Google.';
+        console.error('Google OAuth error:', err);
+        authMessage.textContent = err.message || 'Error con Google. Verifica que Google OAuth esté habilitado en Supabase.';
         authMessage.className = 'auth-message error';
+        btn.disabled = false;
+        btn.textContent = 'Continuar con Google';
       }
     });
 
